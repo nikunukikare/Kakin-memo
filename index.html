@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>課金メモ</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#6750a4">
+<style>
+:root{
+  --primary:#6750a4;--on-primary:#fff;--primary-c:#eaddff;--on-primary-c:#21005d;
+  --secondary-c:#e8def8;--on-secondary-c:#1d192b;
+  --surface:#fef7ff;--surf-low:#f7f2fa;--surf:#f3edf7;--surf-high:#ece6f0;
+  --on-surface:#1d1b20;--on-var:#49454f;--outline:#79747e;--outline-v:#cac4d0;
+  --error:#b3261e;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --primary:#d0bcff;--on-primary:#381e72;--primary-c:#4f378b;--on-primary-c:#eaddff;
+  --secondary-c:#4a4458;--on-secondary-c:#e8def8;
+  --surface:#141218;--surf-low:#1d1b20;--surf:#211f26;--surf-high:#2b2930;
+  --on-surface:#e6e0e9;--on-var:#cac4d0;--outline:#938f99;--outline-v:#49454f;--error:#f2b8b5;color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --primary:#d0bcff;--on-primary:#381e72;--primary-c:#4f378b;--on-primary-c:#eaddff;
+  --secondary-c:#4a4458;--on-secondary-c:#e8def8;
+  --surface:#141218;--surf-low:#1d1b20;--surf:#211f26;--surf-high:#2b2930;
+  --on-surface:#e6e0e9;--on-var:#cac4d0;--outline:#938f99;--outline-v:#49454f;--error:#f2b8b5;color-scheme:dark;}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--surface);color:var(--on-surface);font-family:"Google Sans","Roboto","Hiragino Sans","Noto Sans JP",system-ui,sans-serif;line-height:1.5}
+main{max-width:640px;margin:0 auto;padding:20px 16px 120px}
+h1{font-size:28px;font-weight:500;margin:8px 4px 16px}
+.total{background:var(--primary-c);color:var(--on-primary-c);border-radius:28px;padding:24px 28px;margin-bottom:20px}
+.total small{font-size:14px;letter-spacing:.1px;opacity:.85}
+.total .amt{font-size:44px;font-weight:500;line-height:1.2;word-break:break-all}
+.total .sub{font-size:13px;opacity:.8;margin-top:4px}
+.game{background:var(--surf);border-radius:24px;margin-bottom:12px;overflow:hidden}
+.ghead{display:flex;align-items:center;gap:14px;padding:16px 20px;width:100%;background:none;border:0;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.ghead:hover{background:var(--surf-high)}
+.avatar{flex:none;width:44px;height:44px;border-radius:50%;background:var(--secondary-c);color:var(--on-secondary-c);display:grid;place-items:center;font-weight:500;font-size:18px}
+.gmain{flex:1;min-width:0}
+.gname{font-size:16px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gmeta{font-size:12px;color:var(--on-var)}
+.gamt{font-size:18px;font-weight:500;white-space:nowrap}
+.bar{height:4px;background:var(--surf-high);margin:0 20px 14px;border-radius:2px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--primary);border-radius:2px}
+.list{display:none;padding:0 12px 12px}
+.game.open .list{display:block}
+.item{display:flex;align-items:center;gap:8px;padding:10px 8px 10px 12px;border-radius:16px}
+.item:nth-child(odd){background:var(--surf-low)}
+.item .d{font-size:12px;color:var(--on-var);width:78px;flex:none}
+.item .m{flex:1;min-width:0;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .a{font-weight:500;font-size:14px}
+.icon{width:36px;height:36px;border-radius:50%;border:0;background:none;color:var(--on-var);cursor:pointer;font-size:18px}
+.icon:hover{background:var(--surf-high);color:var(--error)}
+.empty{text-align:center;color:var(--on-var);padding:48px 16px}
+.fab{position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));height:56px;padding:0 24px 0 18px;border:0;border-radius:18px;background:var(--primary-c);color:var(--on-primary-c);font:500 15px inherit;font-family:inherit;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.25)}
+.fab span{font-size:24px;line-height:1}
+dialog{border:0;border-radius:28px;background:var(--surf-high);color:var(--on-surface);padding:24px;width:min(92vw,420px);margin:auto}
+dialog::backdrop{background:rgba(0,0,0,.4)}
+dialog h2{margin:0 0 16px;font-size:22px;font-weight:400}
+.f{display:block;margin-bottom:14px}
+.f span{display:block;font-size:12px;color:var(--on-var);margin:0 4px 4px}
+.f input{width:100%;height:52px;border:1px solid var(--outline);border-radius:14px;background:transparent;color:inherit;font:inherit;padding:0 16px}
+.f input:focus{outline:2px solid var(--primary);border-color:var(--primary)}
+.row{display:flex;gap:10px}.row .f{flex:1}
+.acts{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+.btn{height:40px;padding:0 24px;border-radius:20px;border:0;font:500 14px inherit;font-family:inherit;cursor:pointer;background:none;color:var(--primary)}
+.btn.fill{background:var(--primary);color:var(--on-primary)}
+.btn{font-size:14px;font-weight:500}.fab{font-size:15px;font-weight:500}
+[hidden]{display:none!important}
+.tabs{display:flex;gap:4px;background:var(--surf);border-radius:20px;padding:4px;margin-bottom:16px}
+.tabs button{flex:1;height:40px;border:0;border-radius:16px;background:none;color:var(--on-var);font-family:inherit;font-size:14px;font-weight:500;cursor:pointer}
+.tabs button.on{background:var(--secondary-c);color:var(--on-secondary-c)}
+.chips{display:flex;gap:10px;margin-bottom:12px}
+.chip{flex:1;background:var(--secondary-c);color:var(--on-secondary-c);border-radius:20px;padding:12px 16px}
+.chip b{display:block;font-size:20px;font-weight:500}.chip small{font-size:12px;opacity:.8}
+.static{cursor:default}.static:hover{background:none}
+.icon.edit:hover{color:var(--primary)}
+.avatar{overflow:hidden}.avatar img{width:100%;height:100%;object-fit:cover;display:block}.avatar.click{cursor:pointer}
+.irow{display:flex;gap:4px;padding:0 0 4px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 16px}
+.stats div{background:var(--surf-low);border-radius:14px;padding:8px 12px}
+.stats small{display:block;font-size:11px;color:var(--on-var)}
+.stats b{font-size:14px;font-weight:500}
+</style>
+</head>
+<body>
+<main>
+  <h1>課金メモ</h1>
+  <section class="total">
+    <small>これまでの課金総額</small>
+    <div class="amt" id="total">¥0</div>
+    <div class="sub" id="sub"></div>
+  </section>
+  <div class="tabs"><button class="on" data-t="games">記録</button><button data-t="months">月別</button><button data-t="stats">ゲーム別</button></div>
+  <div id="games"></div>
+  <div id="months" hidden></div>
+  <div id="stats" hidden></div>
+  <input type="file" id="pick" accept="image/*" hidden>
+</main>
+<button class="fab" id="add"><span>＋</span>課金を記録</button>
+
+<dialog id="dlg">
+  <form method="dialog" id="form">
+    <h2 id="dtitle">課金を記録</h2>
+    <label class="f"><span>ゲーム名</span><input id="game" list="gl" required maxlength="40" autocomplete="off"></label>
+    <datalist id="gl"></datalist>
+    <div class="row">
+      <label class="f"><span>金額（円）</span><input id="amount" type="number" min="1" inputmode="numeric" required></label>
+      <label class="f"><span>日付</span><input id="date" type="date" required></label>
+    </div>
+    <label class="f"><span>メモ（任意）</span><input id="memo" maxlength="60" placeholder="例：限定ガチャ、月パス"></label>
+    <div class="acts">
+      <button type="button" class="btn" id="cancel">キャンセル</button>
+      <button class="btn fill" value="ok">保存</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+const KEY="gacha-ledger-v1";
+let entries=[],open={};
+try{entries=JSON.parse(localStorage.getItem(KEY)||"[]")||[]}catch(e){entries=[]}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(entries))}catch(e){}};
+const yen=n=>"¥"+n.toLocaleString("ja-JP");
+const $=id=>document.getElementById(id);
+function el(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+
+function render(){
+  const by={};
+  entries.forEach(e=>{(by[e.game]=by[e.game]||[]).push(e)});
+  const names=Object.keys(by).map(n=>({n,sum:by[n].reduce((s,e)=>s+e.amount,0)})).sort((a,b)=>b.sum-a.sum);
+  const total=names.reduce((s,g)=>s+g.sum,0);
+  $("total").textContent=yen(total);
+  $("sub").textContent=names.length?names.length+"タイトル・"+entries.length+"件の記録":"まだ記録がありません";
+  const box=$("games");box.textContent="";
+  if(!names.length){box.append(el("div","empty","右下のボタンから最初の課金を記録しましょう"))}
+  names.forEach(g=>{
+    const card=el("div","game"+(open[g.n]?" open":""));
+    const h=el("button","ghead");h.type="button";
+    h.append(mkAvatar(g.n));
+    const m=el("div","gmain");m.append(el("div","gname",g.n),el("div","gmeta",by[g.n].length+"件・"+(total?Math.round(g.sum/total*100):0)+"%"));
+    h.append(m,el("div","gamt",yen(g.sum)));
+    h.onclick=()=>{open[g.n]=!open[g.n];card.classList.toggle("open")};
+    const bar=el("div","bar");const i=document.createElement("i");i.style.width=(total?g.sum/total*100:0)+"%";bar.append(i);
+    const list=el("div","list");const ir=el("div","irow");const ib=el("button","btn","アイコンを設定");ib.onclick=()=>pickIcon(g.n);ir.append(ib);if(icons[g.n]){const db=el("button","btn","アイコン削除");db.onclick=()=>{delete icons[g.n];saveIcons();render()};ir.append(db)}list.append(ir);
+    by[g.n].sort((a,b)=>b.date.localeCompare(a.date)).forEach(e=>{
+      const it=el("div","item");
+      const d=el("div","d",e.date.replace(/-/g,"/"));
+      it.append(d,el("div","m",e.memo||"—"),el("div","a",yen(e.amount)));
+      const x=el("button","icon","✕");x.title="削除";x.onclick=()=>{if(confirm("この記録を削除しますか？")){entries=entries.filter(v=>v.id!==e.id);save();render()}};
+      const ed=el("button","icon edit","✎");ed.title="編集";ed.onclick=()=>openDlg(e);it.append(ed,x);list.append(it);
+    });
+    card.append(h,bar,list);box.append(card);
+  });
+  const gl=$("gl");gl.textContent="";names.forEach(g=>{const o=document.createElement("option");o.value=g.n;gl.append(o)});renderMonths();renderStats(names,by,total);
+}
+
+const dlg=$("dlg");
+let editId=null;
+function openDlg(e){
+  editId=e?e.id:null;$("dtitle").textContent=e?"記録を編集":"課金を記録";
+  $("form").reset();
+  const t=new Date();$("date").value=t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0");
+  if(e){$("game").value=e.game;$("amount").value=e.amount;$("date").value=e.date;$("memo").value=e.memo||""}
+  dlg.showModal();
+}
+$("add").onclick=()=>openDlg();
+$("cancel").onclick=()=>dlg.close();
+$("form").addEventListener("submit",ev=>{
+  const sub=ev.submitter;
+  if(!sub||sub.value!=="ok")return;
+  const game=$("game").value.trim(),amount=parseInt($("amount").value,10);
+  if(!game||!(amount>0))return;
+  const rec={game,amount,date:$("date").value,memo:$("memo").value.trim()};
+  if(editId){const t=entries.find(v=>v.id===editId);if(t)Object.assign(t,rec)}
+  else entries.push({id:Date.now()+Math.random().toString(36).slice(2),...rec});
+  open[game]=true;save();render();
+});
+const IKEY="gacha-ledger-icons-v1";
+let icons={};
+try{icons=JSON.parse(localStorage.getItem(IKEY)||"{}")||{}}catch(e){icons={}}
+const saveIcons=()=>{try{localStorage.setItem(IKEY,JSON.stringify(icons))}catch(e){alert("アイコンを保存できませんでした")}};
+function mkAvatar(name){
+  const a=el("div","avatar click",icons[name]?null:[...name][0]);
+  if(icons[name]){const im=document.createElement("img");im.src=icons[name];im.alt="";a.append(im)}
+  a.title="アイコンを変更";
+  a.onclick=ev=>{ev.stopPropagation();pickIcon(name)};
+  return a;
+}
+let pickName=null;
+function pickIcon(n){pickName=n;$("pick").value="";$("pick").click()}
+$("pick").onchange=()=>{
+  const f=$("pick").files[0];if(!f||!pickName)return;
+  const url=URL.createObjectURL(f),im=new Image(),n=pickName;
+  im.onload=()=>{
+    const c=document.createElement("canvas");c.width=c.height=96;
+    const s=Math.min(im.width,im.height),sx=(im.width-s)/2,sy=(im.height-s)/2;
+    c.getContext("2d").drawImage(im,sx,sy,s,s,0,0,96,96);
+    URL.revokeObjectURL(url);
+    try{icons[n]=c.toDataURL("image/webp",0.85)}catch(e){return}
+    saveIcons();render();
+  };
+  im.onerror=()=>{URL.revokeObjectURL(url);alert("画像を読み込めませんでした")};
+  im.src=url;
+};
+const mOpen={};
+const sum=a=>a.reduce((s,e)=>s+e.amount,0);
+function renderMonths(){
+  const box=$("months");box.textContent="";
+  if(!entries.length){box.append(el("div","empty","まだ記録がありません"));return}
+  const by={};entries.forEach(e=>{const k=e.date.slice(0,7);(by[k]=by[k]||[]).push(e)});
+  const keys=Object.keys(by).sort().reverse();
+  const max=Math.max(...keys.map(k=>sum(by[k])));
+  const now=new Date(),nk=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");
+  const f=keys[keys.length-1];
+  const span=Math.max((now.getFullYear()-+f.slice(0,4))*12+now.getMonth()+1-+f.slice(5,7)+1,keys.length);
+  const chips=el("div","chips");
+  const c1=el("div","chip");c1.append(el("small",null,"今月"),el("b",null,yen(by[nk]?sum(by[nk]):0)));
+  const c2=el("div","chip");c2.append(el("small",null,"月平均"),el("b",null,yen(Math.round(sum(entries)/span))));
+  chips.append(c1,c2);box.append(chips);
+  keys.forEach(k=>{
+    const list=by[k],s=sum(list);
+    const card=el("div","game"+(mOpen[k]?" open":""));
+    const h=el("button","ghead");h.type="button";
+    const av=el("div","avatar",+k.slice(5)+"月");av.style.fontSize="14px";
+    const m=el("div","gmain");m.append(el("div","gname",k.slice(0,4)+"年"+ +k.slice(5)+"月"),el("div","gmeta",list.length+"件"));
+    h.append(av,m,el("div","gamt",yen(s)));
+    h.onclick=()=>{mOpen[k]=!mOpen[k];card.classList.toggle("open")};
+    const bar=el("div","bar");const i=document.createElement("i");i.style.width=(s/max*100)+"%";bar.append(i);
+    const lst=el("div","list");
+    const g={};list.forEach(e=>{g[e.game]=(g[e.game]||0)+e.amount});
+    Object.entries(g).sort((a,b)=>b[1]-a[1]).forEach(([n,v])=>{const it=el("div","item");it.append(el("div","m",n),el("div","a",yen(v)));lst.append(it)});
+    card.append(h,bar,lst);box.append(card);
+  });
+}
+function renderStats(names,by,total){
+  const box=$("stats");box.textContent="";
+  if(!names.length){box.append(el("div","empty","まだ記録がありません"));return}
+  names.forEach(g=>{
+    const list=by[g.n],n=list.length,dates=list.map(e=>e.date).sort();
+    const mo=new Set(list.map(e=>e.date.slice(0,7))).size;
+    const card=el("div","game");
+    const h=el("div","ghead static");h.append(mkAvatar(g.n));
+    const m=el("div","gmain");m.append(el("div","gname",g.n),el("div","gmeta","全体の"+(total?Math.round(g.sum/total*100):0)+"%"));
+    h.append(m,el("div","gamt",yen(g.sum)));
+    const grid=el("div","stats");
+    [["記録数",n+"件"],["1回あたり平均",yen(Math.round(g.sum/n))],["最大の1回",yen(Math.max(...list.map(e=>e.amount)))],["月平均",yen(Math.round(g.sum/mo))],["初回",dates[0].replace(/-/g,"/")],["直近",dates[n-1].replace(/-/g,"/")]]
+      .forEach(([a,b])=>{const d=document.createElement("div");d.append(el("small",null,a),el("b",null,b));grid.append(d)});
+    card.append(h,grid);box.append(card);
+  });
+}
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));
+  ["games","months","stats"].forEach(id=>$(id).hidden=id!==b.dataset.t);
+});
+render();
+</script>
+</body>
+</html>
